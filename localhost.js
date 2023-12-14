@@ -1,59 +1,151 @@
 const ws = require("ws")
+const fs = require("fs")
+const socket = new ws("ws://localhost:5000")
 
 
 
-function appGenerator(){
-		
-	const url = "wss://localhost-njg5.onrender.com"
-	
-	let socket;	
+const getRoutes = new Map();
 
-	function listen(auth_obj){
-		
-		
-		socket = 	
+const postRoutes = new Map();
 
-	}
+function get(route, responseFunction){
+	getRoutes.set(route, responseFunction)	
+}
 
-	const rest = {
-		get:(route, resFunc) => {
-				
-		} 
-	}
 
-	const task = {
-		compute:(route, resFunc) => {
-
-		}
-	}
-
-	return {
-		listen, 
-		rest,
-		task
-	}
+function post(route, responseFunction){
+	postRoutes.set(route, responseFunction)
 }
 
 
 
-module.exports = appGenerator()
 
+const rest = {
+	get,
+	post	
+}
 
-const app = appGenerator();
+const computeFunctions = new Map();
 
-app.rest.get("/", (req, res) => {
+function compute(route, computeFunction){
+	computeFunctions.set(route, computeFunction)
+}
+
+const task = {
+	compute	
+}
+
+function listen(auth){
+
+	socket.on("open", () => {
+
 	
-})
+		socket.send(JSON.stringify({
+			method:"server-log",
+			data:{
+				id:auth.id,
+				secret:auth.secret
+			}
+		}))
+	})
 
-app.task.compute("/compute", (payload, response) => {
-	
+	setInterval(() => {
+		socket.send(JSON.stringify({
+			method:"keepalive",
+			data:{}
+		}))
+	}, 5000)
+}
+
+const app = {
+	rest,
+	task,
+	listen
+}
+
+
+
+
+socket.on("message", msg => {
+
+	msg = JSON.parse(msg.toString())
+
+
+	let {method, data} = msg;
+
+
+	if(method === "client-req"){
+
 		
-	response.send({body:"Hello there"})
-})
+		const {route, requestid, method, request} = data; 
 
-app.ws.on("")
+		const res = {};
 
-app.ws.send({
+		res.send = (response) => {
+			socket.send(JSON.stringify({
+				method:"server-res",
+	res.sendFile(path.join(__dirname), "get.html")
+				data:{
+					response,
+					requestid
+				}
+			}))
+
+		}
+
+		res.sendFile = (path) => {
+			let file = fs.readFileSync(path, "utf8");
+
+			res.send(file)
+		}
+
+		
+
+		let taskres = {};
+					
+		taskres.send = (response) => {
+			socket.send(JSON.stringify({
+				method:"server-res",
+				data:{
+					response,
+					address:data.address
+				}
+			}))
+		}	
+		
+		if(method === "get"){
+			let routeHandler = getRoutes.get(route)
+
+			if(!routeHandler) return
+
+			routeHandler(request, res)
+		}
+		if(method ==="post"){
+			let routeHandler = postRoutes.get(route)
+
+			if(!routeHandler) return 
+
+			routeHandler(request, res)
+		}
+
+
+		if(method === "task"){
+			let computeFunction = computeFunctions.get(route) 
+
+			if(!computeFunction) return; 
+
+
+			
+
+			computeFunction(request, taskres)
+		}
+			
+				
+		
+
+	}
 	
 })
 
+
+module.exports =  app
