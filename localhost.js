@@ -115,14 +115,24 @@ socket.on("message", msg => {
 		if(method === "get"){
 			let routeHandler = getRoutes.get(route)
 
-			if(!routeHandler) return
+			if(!routeHandler) {
+				
+				res.send({
+					err:404
+				})
+				return
+			}
 
 			routeHandler(request, res)
 		}
 		if(method ==="post"){
 			let routeHandler = postRoutes.get(route)
 
-			if(!routeHandler) return 
+			if(!routeHandler) {
+				res.send({
+					err:404
+				})
+			} 
 
 			routeHandler(request, res)
 		}
