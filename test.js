@@ -1,16 +1,17 @@
 const ws = require("ws")
 
-const socket = new ws("wss://localhost-njg5.onrender.com")
+const socket = new ws("ws://localhost:5000")
 
 
-const restFunctions = []
+
+const routes = new Map()
 
 function get(route, responseFunction){
-		
+	routes.set(route, responseFunction)	
 }
 
 const rest = {
-
+	get,
 	
 }
 
@@ -56,32 +57,55 @@ socket.on("message", msg => {
 
 	let {method, data} = msg;
 
-	console.log(msg)	
 
 	if(method === "client-req"){
 
 		
-		restFunctions.forEach(restFunction => {
-			
-			const {route, func} = restFunction
+		const {route, requestid} = data; 
 
-			let response = func(route)	
-									
+				
+
+		if(!routes.has("/" + route)){
+			
+				
 			socket.send(JSON.stringify({
 				method:"server-res",
 				data:{
-					requestid:data.requestid,
-					response	
+					response:{
+						err:"no such route"
+					},
+					requestid
 				}
-			}))						
+			}))
+
+			return
+		}
 		
-		})
+		let response = routes.get("/" + route)()
+		
+		socket.send(JSON.stringify({
+			method:"server-res",
+			data:{
+				response,
+				requestid
+			}
+		}))	
 
 	}
 	
 })
 
 
+
+app.rest.get("/get", () => {
+	
+	const t = Date.now()
+
+	return {t}
+})
+
+
 app.listen({
-	id:"host-1"
+	id:"host-1",
+	secret:"secret-1"
 })
