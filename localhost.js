@@ -1,7 +1,7 @@
 const ws = require("ws")
 const fs = require("fs")
-const socket = new ws("ws://localhost:5000")
 
+const socket = new ws("wss://localhost-njg5.onrender.com/")
 
 
 const getRoutes = new Map();
@@ -84,7 +84,6 @@ socket.on("message", msg => {
 		res.send = (response) => {
 			socket.send(JSON.stringify({
 				method:"server-res",
-	res.sendFile(path.join(__dirname), "get.html")
 				data:{
 					response,
 					requestid
