@@ -14,6 +14,7 @@ app.rest.get("/get", (req, res) => {
 	res.sendFile(path.join(__dirname, "get.html"))
 })
 
+
 app.listen({
 	id:"host-1",
 	secret:"secret-1"

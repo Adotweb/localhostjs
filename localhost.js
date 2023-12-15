@@ -4,6 +4,9 @@ const fs = require("fs")
 const socket = new ws("wss://localhost-njg5.onrender.com/")
 
 
+
+
+
 const getRoutes = new Map();
 
 const postRoutes = new Map();
@@ -17,7 +20,7 @@ function post(route, responseFunction){
 	postRoutes.set(route, responseFunction)
 }
 
-
+	
 
 
 const rest = {
@@ -35,8 +38,11 @@ const task = {
 	compute	
 }
 
-function listen(auth){
+	
+	
 
+
+function listen(auth){
 	socket.on("open", () => {
 
 	
@@ -81,6 +87,12 @@ socket.on("message", msg => {
 
 		const res = {};
 
+		const req = {
+			...request, 
+			method, 
+		}
+
+
 		res.send = (response) => {
 			socket.send(JSON.stringify({
 				method:"server-res",
@@ -123,7 +135,7 @@ socket.on("message", msg => {
 				return
 			}
 
-			routeHandler(request, res)
+			routeHandler(req, res)
 		}
 		if(method ==="post"){
 			let routeHandler = postRoutes.get(route)
@@ -134,7 +146,7 @@ socket.on("message", msg => {
 				})
 			} 
 
-			routeHandler(request, res)
+			routeHandler(req, res)
 		}
 
 
@@ -146,7 +158,7 @@ socket.on("message", msg => {
 
 			
 
-			computeFunction(request, taskres)
+			computeFunction(req, taskres)
 		}
 			
 				
