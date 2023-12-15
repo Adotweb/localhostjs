@@ -15,6 +15,16 @@ app.rest.get("/get", (req, res) => {
 })
 
 
+
+app.rest.post("/sendMessage", (req, res) => {
+	
+	console.log(req.body)
+
+	res.send({body:"Hello there"})
+})
+
+
+
 app.listen({
 	id:"host-1",
 	secret:"secret-1"

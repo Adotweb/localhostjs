@@ -1,8 +1,8 @@
 const ws = require("ws")
 const fs = require("fs")
 
-const socket = new ws("wss://localhost-njg5.onrender.com/")
-
+//const socket = new ws("wss://localhost-njg5.onrender.com/")
+const socket = new ws("ws://localhost:5000")
 
 
 
@@ -79,6 +79,7 @@ socket.on("message", msg => {
 
 	let {method, data} = msg;
 
+	console.log(data)
 
 	if(method === "client-req"){
 
@@ -86,6 +87,8 @@ socket.on("message", msg => {
 		const {route, requestid, method, request} = data; 
 
 		const res = {};
+
+		console.log(request)
 
 		const req = {
 			...request, 
