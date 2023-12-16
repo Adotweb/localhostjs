@@ -7,11 +7,20 @@ const socket = new ws("ws://localhost:5000")
 
 
 
+
 const getRoutes = new Map();
 
 const postRoutes = new Map();
 
 function get(route, responseFunction){
+
+//	let routePath = route.split("/").map(s => "/" + s)
+
+	
+
+
+
+
 	getRoutes.set(route, responseFunction)	
 }
 
@@ -23,9 +32,16 @@ function post(route, responseFunction){
 	
 let clients = new Map()
 
+
+function static(){
+	
+
+}
+
 const rest = {
 	get,
-	post	
+	post,
+	static
 }
 
 const clientChangeFunctions = []
@@ -86,6 +102,7 @@ socket.on("message", msg => {
 
 	let {method, data} = msg;
 
+
 	
 	if(method==="connect-client"){
 
@@ -113,13 +130,14 @@ socket.on("message", msg => {
 
 		const res = {};
 
+		console.log(route)
 
 		const req = {
 			...request, 
 			method, 
 		}
 
-
+		
 		res.send = (response) => {
 			socket.send(JSON.stringify({
 				method:"server-res",

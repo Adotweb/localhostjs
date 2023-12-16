@@ -13,8 +13,15 @@ app.onClientChange(clients => {
 })
 
 
-app.rest.get("/", (req, res) => {
+app.rest.get("*", (req, res) => {
 
+	res.send("hello there")
+})
+
+app.rest.get("/", (req, res) => {
+	
+
+	
 
 	res.sendFile(path.join(__dirname, "index.html"))
 })
