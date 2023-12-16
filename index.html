@@ -1,6 +1,19 @@
-<body>
-	hello there from index
+<script src="/js/localhost.js"></script>
 
-	<a href="/host-1/get">this takes you to get</a>
+<script>
+
+	app.register()
+		
+	app.ws.onmessage(msg => {
+		console.log(msg)
+	})
+
+
+</script>
+
+<body>
+
+
+<button onclick="send()">send</button>
 
 </body>

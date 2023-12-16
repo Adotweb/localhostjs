@@ -21,24 +21,18 @@ function post(route, responseFunction){
 }
 
 	
-
+let clients = new Map()
 
 const rest = {
 	get,
 	post	
 }
 
-const computeFunctions = new Map();
-
-function compute(route, computeFunction){
-	computeFunctions.set(route, computeFunction)
+const clientChangeFunctions = []
+function onClientChange(func){
+	clientChangeFunctions.push(func)
 }
 
-const task = {
-	compute	
-}
-
-	
 	
 
 
@@ -63,15 +57,28 @@ function listen(auth){
 	}, 5000)
 }
 
-const app = {
-	rest,
-	task,
-	listen
+function send(d){
+
+
+	
+
+	socket.send(JSON.stringify({
+		method:"server-ws",
+		data:d	
+	}))
 }
 
+const server = {
+	send
+}
 
-
-
+const app = {
+	onClientChange,
+	rest,
+	listen,
+	clients,
+	server	
+}
 socket.on("message", msg => {
 
 	msg = JSON.parse(msg.toString())
@@ -79,7 +86,25 @@ socket.on("message", msg => {
 
 	let {method, data} = msg;
 
-	console.log(data)
+	
+	if(method==="connect-client"){
+
+		const {clientid} = data; 
+
+
+		clients.set(clientid, {})
+
+		clientChangeFunctions.forEach(f => f(clients))
+	}
+
+	if(method === "disconnect-client"){
+		const {clientid} = data;
+
+		clients.delete(clientid)
+			
+		clientChangeFunctions.forEach(f => f(clients))
+	}
+
 
 	if(method === "client-req"){
 
@@ -88,7 +113,6 @@ socket.on("message", msg => {
 
 		const res = {};
 
-		console.log(request)
 
 		const req = {
 			...request, 
