@@ -1,12 +1,36 @@
 const ws = require("ws")
 const fs = require("fs")
 
-//const socket = new ws("wss://localhost-njg5.onrender.com/")
-const socket = new ws("ws://localhost:5000")
+const socket = new ws("wss://localhost-njg5.onrender.com/")
+//const socket = new ws("ws://localhost:5000")
 
 
 
 
+const routes = {
+}
+
+
+function constructRoute(route, method, func){
+	let P = route.split("/").map(s => "/" + s) 
+
+	let C = routes
+
+	for(let i = 0; i < P.length; i++){
+		routes[P[i]] = {}	
+		C = routes[P[i]]		
+	}	
+
+	console.log(C)
+
+	C[method] = func
+
+	console.log(C)
+}
+
+constructRoute("/", "get", () => {})
+
+const route1 = "/"
 
 const getRoutes = new Map();
 
