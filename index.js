@@ -21,8 +21,8 @@ app.rest.get("*", (req, res) => {
 app.rest.get("/", (req, res) => {
 	
 
-	
-
+		
+		
 	res.sendFile(path.join(__dirname, "index.html"))
 })
 
@@ -32,6 +32,6 @@ app.rest.get("/get", (req, res) => {
 
 
 app.listen({
-	id:"host-1",
-	secret:"secret-1"
+	id:process.env.app_id,
+	id:process.env.api_key
 })

@@ -1,8 +1,8 @@
 const ws = require("ws")
 const fs = require("fs")
 
-const socket = new ws("wss://localhost-njg5.onrender.com/")
-//const socket = new ws("ws://localhost:5000")
+//const socket = new ws("wss://localhost-njg5.onrender.com/")
+const socket = new ws("ws://localhost:5000")
 
 
 
