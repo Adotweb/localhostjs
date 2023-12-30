@@ -6,7 +6,7 @@
     "express": "^4.18.2",
     "ws": "^8.15.0"
   },
-  "name": "localhost",
+  "name": "localhostjs",
   "version": "0.0.8",
   "description": "A js library to build and deploy websites to localhost in a working manner",
   "main": "localhost.js",
