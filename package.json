@@ -5,5 +5,25 @@
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "ws": "^8.15.0"
-  }
+  },
+  "name": "localhost",
+  "version": "0.0.8",
+  "description": "A js library to build and deploy websites to localhost in a working manner",
+  "main": "localhost.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adotweb/localhostjs.git"
+  },
+  "keywords": [
+    "localhost",
+    "serverless",
+    "deploy"
+  ],
+  "author": "Alim Weber",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Adotweb/localhostjs/issues"
+  },
+  "homepage": "https://github.com/Adotweb/localhostjs#readme"
 }
