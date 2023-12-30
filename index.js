@@ -1,37 +1,15 @@
 const app = require("./localhost")
-
+require("dotenv").config()
 const path = require("path")
 
-
-app.onClientChange(clients => {
-
-	app.server.send({
-		event:"clientschanged",
-		addressList:[...clients.keys()]
-	
-	})
-})
+const {static} = app.express
 
 
-app.rest.get("*", (req, res) => {
+app.rest.use(static(path.join(__dirname, "static")))
 
-	res.send("hello there")
-})
-
-app.rest.get("/", (req, res) => {
-	
-
-		
-		
-	res.sendFile(path.join(__dirname, "index.html"))
-})
-
-app.rest.get("/get", (req, res) => {
-	res.send({hello:"hello"})
-})
 
 
 app.listen({
-	id:process.env.app_id,
-	id:process.env.api_key
-})
+	id:process.env.id,
+	secret:process.env.secret
+}, "http://localhost:5000")

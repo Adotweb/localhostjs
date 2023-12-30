@@ -1,241 +1,111 @@
 const ws = require("ws")
-const fs = require("fs")
+const express = require("express"); 
 
-//const socket = new ws("wss://localhost-njg5.onrender.com/")
-const socket = new ws("ws://localhost:5000")
+const eapp = express()
+const bodyparser = require("body-parser")
+const cookieparser = require("cookie-parser")
+
+eapp.use(express.json())
+eapp.use(bodyparser())
+eapp.use(cookieparser())
+let socket = null
 
 
+const rest = eapp
 
 
-const routes = {
-}
+function listen(auth, url){
+	if(!url) url = "wss://localhost-njg5.onrender.com/";
 
+	socket = new ws(url)
 
-function constructRoute(route, method, func){
-	let P = route.split("/").map(s => "/" + s) 
-
-	let C = routes
-
-	for(let i = 0; i < P.length; i++){
-		routes[P[i]] = {}	
-		C = routes[P[i]]		
-	}	
-
-	console.log(C)
-
-	C[method] = func
-
-	console.log(C)
-}
-
-constructRoute("/", "get", () => {})
-
-const route1 = "/"
-
-const getRoutes = new Map();
-
-const postRoutes = new Map();
-
-function get(route, responseFunction){
-
-//	let routePath = route.split("/").map(s => "/" + s)
-
-	
+	eapp.listen(3999)
 
 
 
+	socket.Send = msg => socket.send(JSON.stringify(msg))
 
-	getRoutes.set(route, responseFunction)	
-}
+	socket.onopen = () => {
 
+		socket.Send(({
 
-function post(route, responseFunction){
-	postRoutes.set(route, responseFunction)
-}
+			event:"host.login",
+			data:auth
 
-	
-let clients = new Map()
-
-
-function static(){
-	
-
-}
-
-const rest = {
-	get,
-	post,
-	static
-}
-
-const clientChangeFunctions = []
-function onClientChange(func){
-	clientChangeFunctions.push(func)
-}
-
-	
-
-
-function listen(auth){
-	socket.on("open", () => {
-
-	
-		socket.send(JSON.stringify({
-			method:"server-log",
-			data:{
-				id:auth.id,
-				secret:auth.secret
-			}
 		}))
-	})
+
+
+	}
+
+	socket.onmessage = async msg => {
+
+		msg = JSON.parse(msg.data)	
+	
+		const {event, data} = msg
+		
+		console.log(event)
+
+		switch(event){
+
+
+			case "server.login.unauthorized":
+
+				throw new Error(msg.event);
+
+
+			case "client.rest.request":
+
+
+				const {method, request, route, requestid} = data	
+
+					
+				let res = await fetch("http://localhost:3999" + route, {
+					headers:request.headers, 
+					method,
+					body:method=="POST" ? request.body : undefined,
+
+				}) 
+		
+				res = await (method==="POST" ?  res.body() : res.text())
+
+				socket.Send({
+
+					event:"host.rest.response",
+					data:{
+						requestid,
+						response:res
+					}
+
+				})
+
+				break;
+		}
+	}
 
 	setInterval(() => {
-		socket.send(JSON.stringify({
-			method:"keepalive",
+
+		socket.Send(({
+
+			event:"keepalive",
 			data:{}
+
 		}))
-	}, 5000)
+
+	}, 3000)
+
 }
 
-function send(d){
 
 
-	
 
-	socket.send(JSON.stringify({
-		method:"server-ws",
-		data:d	
-	}))
-}
 
-const server = {
-	send
-}
 
 const app = {
-	onClientChange,
-	rest,
+	express,	
+	rest, 
 	listen,
-	clients,
-	server	
 }
-socket.on("message", msg => {
 
-	msg = JSON.parse(msg.toString())
+module.exports = app
 
-
-	let {method, data} = msg;
-
-
-	
-	if(method==="connect-client"){
-
-		const {clientid} = data; 
-
-
-		clients.set(clientid, {})
-
-		clientChangeFunctions.forEach(f => f(clients))
-	}
-
-	if(method === "disconnect-client"){
-		const {clientid} = data;
-
-		clients.delete(clientid)
-			
-		clientChangeFunctions.forEach(f => f(clients))
-	}
-
-
-	if(method === "client-req"){
-
-		
-		const {route, requestid, method, request} = data; 
-
-		const res = {};
-
-		console.log(route)
-
-		const req = {
-			...request, 
-			method, 
-		}
-
-		
-		res.send = (response) => {
-			socket.send(JSON.stringify({
-				method:"server-res",
-				data:{
-					response,
-					requestid
-				}
-			}))
-
-		}
-
-		res.sendFile = (path) => {
-			let file = fs.readFileSync(path, "utf8");
-
-			res.send(file)
-		}
-
-		
-
-		let taskres = {};
-					
-		taskres.send = (response) => {
-			socket.send(JSON.stringify({
-				method:"server-res",
-				data:{
-					response,
-					address:data.address
-				}
-			}))
-		}	
-		
-		if(method === "get"){
-			let routeHandler = getRoutes.get(route)
-
-			if(!routeHandler) {
-				
-				res.send({
-					err:404
-				})
-				return
-			}
-
-			routeHandler(req, res)
-		}
-		if(method ==="post"){
-			let routeHandler = postRoutes.get(route)
-
-			if(!routeHandler) {
-				res.send({
-					err:404
-				})
-			} 
-
-			routeHandler(req, res)
-		}
-
-
-		if(method === "task"){
-			let computeFunction = computeFunctions.get(route) 
-
-			if(!computeFunction) return; 
-
-
-			
-
-			computeFunction(req, taskres)
-		}
-			
-				
-		
-
-	}
-	
-})
-
-
-module.exports =  app
+//should evaluate to 
