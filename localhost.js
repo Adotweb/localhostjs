@@ -55,34 +55,62 @@ function listen(auth, url){
 			case "client.rest.request":
 
 
-				let {method, request, route, requestid} = data	
-
-				method = method.toUpperCase();
+				const {method, request, route, requestid} = data	
 
 
-				let res = await fetch("http://localhost:3999" + route, {
-					headers:request.headers, 
-					method,
-					body:method=="POST" ? request.body : undefined,
 
-				}) 
-	
+				switch(method){
+					
+					case "GET": 
 
-				console.log(res)
+						response = await fetch("http://localhost:3999" + route, {
 
-				res = await res.text();
+							headers: request.headers
+
+						})
+						
+						response = await response.text()
+
+
+						break;
+
+					case "POST":
+
+						response = await fetch("http://localhost:3999" + route, {
+							method:"POST",
+							heders:{
+								"Content-Type":"application/json"
+							},
+							body:JSON.stringify(request.body)
+						})
+						
+						response = await response.text()
+
+
+						try {
+							response = JSON.parse(response)
+						}catch(e){
+
+						}
+
+				}
+
+
+
+
+				
+
 				socket.Send({
 
 					event:"host.rest.response",
 					data:{
 						requestid,
-						response:res
+						response
 					}
 
 				})
 
-				break;
-		}
+				break;		}
 	}
 
 	setInterval(() => {
