@@ -78,7 +78,7 @@ function listen(auth, url){
 
 						response = await fetch("http://localhost:3999" + route, {
 							method:"POST",
-							heders:{
+							headers:{
 								"Content-Type":"application/json"
 							},
 							body:JSON.stringify(request.body)
