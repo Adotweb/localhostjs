@@ -55,18 +55,22 @@ function listen(auth, url){
 			case "client.rest.request":
 
 
-				const {method, request, route, requestid} = data	
+				let {method, request, route, requestid} = data	
 
-					
+				method = method.toUpperCase();
+
+
 				let res = await fetch("http://localhost:3999" + route, {
 					headers:request.headers, 
 					method,
 					body:method=="POST" ? request.body : undefined,
 
 				}) 
-		
-				res = await (method==="POST" ?  res.body() : res.text())
+	
 
+				console.log(res)
+
+				res = await res.text();
 				socket.Send({
 
 					event:"host.rest.response",
