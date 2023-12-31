@@ -43,7 +43,6 @@ function listen(auth, url){
 	
 		const {event, data} = msg
 		
-		console.log(event)
 
 		switch(event){
 
