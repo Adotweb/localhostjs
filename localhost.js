@@ -14,12 +14,17 @@ let socket = null
 const rest = eapp
 
 
-function listen(auth, url){
+function listen(auth, url, dev){
+
+	
+	eapp.listen(3999)
+
+	if(dev) return
+
 	if(!url) url = "wss://localhost-njg5.onrender.com/";
 
 	socket = new ws(url)
 
-	eapp.listen(3999)
 
 
 
@@ -84,7 +89,10 @@ function listen(auth, url){
 							body:JSON.stringify(request.body)
 						})
 						
+						console.log(response.headers)
+
 						response = await response.text()
+
 
 
 						try {
