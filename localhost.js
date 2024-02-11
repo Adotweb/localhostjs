@@ -11,6 +11,8 @@ eapp.use(cookieparser())
 let socket = null
 
 
+const {BSON} = require("bson")
+
 const rest = eapp
 
 
@@ -73,11 +75,18 @@ function listen(auth, url, dev){
 							headers: request.headers
 
 						})
-						
-						response = await response.text()
+					
+
+						let type = response.headers.get("Content-Type")
+
+
+						response = await response.arrayBuffer();
+				
+						response = {type, buf:[...new Uint8Array(response)]}
 
 
 						break;
+
 
 					case "POST":
 
@@ -89,7 +98,6 @@ function listen(auth, url, dev){
 							body:JSON.stringify(request.body)
 						})
 						
-						console.log(response.headers)
 
 						response = await response.text()
 
@@ -102,7 +110,6 @@ function listen(auth, url, dev){
 						}
 
 				}
-
 
 
 
