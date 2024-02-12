@@ -18,22 +18,61 @@ Currently the framework only allows for http requests (namely `GET` and `POST`) 
 HTTP requests are easily instantiated using express syntax (it is actually exactly the same as we use express to handle http)
 
 ```js 
-const app = require("localhostjs")
 
-app.rest.get("/", (req, res) => {
-    
-    //your calculations
+const app = require("localhostjs");
+const exp = app.express
+const path = require("path")
+require("dotenv").config();
 
-    res.send({
-            body:"some body"
-    })
+
+app.rest.use(exp.static(path.join(__dirname, "static")));
+
+
+app.socket.on("event", data => {
+
+    processData(data); 
+
+
+    app.socket.send("event", {...somedata}, [
+        data.id, //original sender
+        receiver1, 
+        receiver2, 
+        receiver3, 
+    ])
 
 })
 
 app.listen({
-    id:process.env.id,//this is your localhost project id
-    secret:process.env.secret //your localhost project secret
-}, "http://localhost:5000")
-// your app will automatically connect to 
-// localhost servers if you don't specify the url 
-``
+        id:process.env.id,
+        secret:process.env.secret
+}, "http://localhost:5000") 
+//leave out url if you connect to localhostjs
+
+```
+
+
+## Websockets and client lib 
+To use the websocket functionality you have to use our websocket client lib (the file with cdn in the name...) or simply use the cdn: 
+
+
+```html 
+<script src="https://cdn.jsdelivr.net/gh/Adotweb/localhostjs/localhost.cdn.js"></script>
+```
+
+
+in said client lib things behave similar to the `socket.send` and `socket.on` function in the server library: 
+
+
+```js 
+
+socket.register() //connects to the currently connected url
+
+socket.on("event", data => {
+
+    handleData(data)
+
+})
+
+socket.send("event", {...somedata})
+
+```
