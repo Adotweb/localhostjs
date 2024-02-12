@@ -8,16 +8,28 @@ const cookieparser = require("cookie-parser")
 eapp.use(express.json())
 eapp.use(bodyparser())
 eapp.use(cookieparser())
+
 let socket = null
 
+let soc = {
+
+
+	listeners : new Map(),
+	on: (event, func) => {
+
+		soc.listeners.set(event, func)
+
+	},
+	send:() => {}
+}
 
 const {BSON} = require("bson")
 
-const rest = eapp
+const rest = eapp 
+
 
 
 function listen(auth, url, dev){
-
 	
 	eapp.listen(3999)
 
@@ -27,10 +39,27 @@ function listen(auth, url, dev){
 
 	socket = new ws(url)
 
-
+	
 
 
 	socket.Send = msg => socket.send(JSON.stringify(msg))
+
+	soc.send = (event, data, receivers=[]) => {
+	
+
+
+		socket.Send({
+
+			event:"ws.message.toclient",
+			data:{
+				event,
+				data,
+				clientList:receivers
+			}
+
+		})
+
+	}
 
 	socket.onopen = () => {
 
@@ -52,6 +81,22 @@ function listen(auth, url, dev){
 		
 
 		switch(event){
+		
+			case "toclient.failed":
+				throw new Error("toclient failed!");
+			case "ws.message.tohost":
+					
+			
+				
+
+				let func = soc.listeners.get(data.event) 
+
+				delete data.event; 
+
+
+				func(data.data)
+
+				break;
 
 
 			case "server.login.unauthorized":
@@ -145,10 +190,10 @@ function listen(auth, url, dev){
 
 
 
-
 const app = {
 	express,	
-	rest, 
+	rest,
+	socket:soc,
 	listen,
 }
 
