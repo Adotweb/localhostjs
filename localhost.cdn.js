@@ -16,7 +16,7 @@ let socket = {
 
 		if(!url){
 
-			url = window.location.href.replace(window.location.protocol, window.location.protocol == "https" ? "wss:" : "ws:")
+			url = window.location.href.replace(window.location.protocol, window.location.protocol == "https:" ? "wss:" : "ws:")
 
 		}
 		socket.connection = new WebSocket(url)		
