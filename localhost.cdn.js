@@ -8,7 +8,7 @@ function getCookie(name) {
 
 let socket = {
 
-	register: ({url, onopen}) => {
+	register: (url) => {
 		
 		let id = crypto.randomUUID()
 		
@@ -24,7 +24,6 @@ let socket = {
 		socket.connection.onopen = () => {
 
 
-
 			socket.connection.send(JSON.stringify({
 				
 				event:"client.login",
@@ -35,12 +34,14 @@ let socket = {
 			}))
 			
 
-			onopen()
+			socket.onopens.forEach(func => func())
 		}
 
 
 
 	},
+	onopens:[],
+	onopen: (func) => socket.onopens.push(func),
 	connection: undefined,
 	on: (_event, func) => {
 		socket.connection.onmessage = msg => {
