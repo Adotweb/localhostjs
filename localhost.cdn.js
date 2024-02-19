@@ -8,7 +8,7 @@ function getCookie(name) {
 
 let socket = {
 
-	register: (url, onopen) => {
+	register: ({url, onopen}) => {
 		
 		let id = crypto.randomUUID()
 		
