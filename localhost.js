@@ -101,7 +101,7 @@ function listen(auth, url, dev){
 
 				delete data.event; 
 
-				if(funcs.length > 0);
+				if(!funcs) {break};
 
 				funcs.forEach(func => func(data.data))
 
