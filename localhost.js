@@ -17,7 +17,7 @@ let soc = {
 	listeners : new Map(),
 	on: (event, func) => {
 
-		soc.listeners.set(event, func)
+		soc.listeners.set(event, [...soc.listeners.get(event), func])
 
 	},
 	send:() => {}
@@ -89,12 +89,13 @@ function listen(auth, url, dev){
 			
 				
 
-				let func = soc.listeners.get(data.event) 
+				let funcs = soc.listeners.get(data.event) 
 
 				delete data.event; 
 
+				if(funcs.length > 0);
 
-				func(data.data)
+				funcs.forEach(func => func(data.data))
 
 				break;
 
