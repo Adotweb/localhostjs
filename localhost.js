@@ -17,7 +17,15 @@ let soc = {
 	listeners : new Map(),
 	on: (event, func) => {
 
-		soc.listeners.set(event, [...soc.listeners.get(event), func])
+
+		let current = soc.listeners.get(event)
+
+		if(current){
+			soc.listeners.set(event, [...current, func])
+		}else{
+			soc.listeners.set(event, [func])
+		}
+
 
 	},
 	send:() => {}
