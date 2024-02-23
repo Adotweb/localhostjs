@@ -38,23 +38,32 @@ let socket = {
 		}
 
 
+		socket.connection.onmessage = msg => {
+
+			const {event, data} = JSON.parse(msg.data)
+
+
+			socket.ons.forEach(on => {
+				
+				if(event === on._event){
+
+					on.func(data)
+				}
+			})
+
+
+		}
 
 	},
 	onopens:[],
 	onopen: (func) => socket.onopens.push(func),
 	connection: undefined,
+	ons:[],
 	on: (_event, func) => {
-		socket.connection.onmessage = msg => {
-
-			const {event, data} = JSON.parse(msg.data)
-
-			if(event === _event){
-
-				func(data)
-			}
-
-
-		}
+		socket.ons.push({
+			_event,
+			func
+		})
 	},
 	sendToServer:(event, data, receiver) => {
 		
