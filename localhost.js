@@ -129,16 +129,7 @@ function listen(auth, url, dev){
 							headers: request.headers
 
 						})
-					
-
-						let type = response.headers.get("Content-Type")
-
-
-						response = await response.arrayBuffer();
 				
-						response = {type, buf:[...new Uint8Array(response)]}
-
-
 						break;
 
 
@@ -151,23 +142,27 @@ function listen(auth, url, dev){
 							},
 							body:JSON.stringify(request.body)
 						})
-						
 
-						response = await response.text()
-
-
-
-						try {
-							response = JSON.parse(response)
-						}catch(e){
-
-						}
-
+						break;
 				}
 
 
 
+										
+
+				let {headers, redirected, status, ok, statusText, url, type} = response
+
+				console.log(headers)
+				headers = Object.fromEntries(headers.entries());
+					
+
+				const meta = {headers, redirected, status, ok, statusText, url, type}		
 				
+
+
+				response = await response.arrayBuffer();
+				
+				response = {buf:[...new Uint8Array(response)], meta}
 
 				socket.Send({
 
