@@ -152,7 +152,6 @@ function listen(auth, url, dev){
 
 				let {headers, redirected, status, ok, statusText, url, type} = response
 
-				console.log(headers)
 				headers = Object.fromEntries(headers.entries());
 					
 
