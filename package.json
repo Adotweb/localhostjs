@@ -8,7 +8,7 @@
     "ws": "^8.15.0"
   },
   "name": "localhostjs",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "description": "A js library to build and deploy websites to localhost in a working manner",
   "main": "localhost.js",
   "repository": {
