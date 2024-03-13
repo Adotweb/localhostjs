@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "axios": "^1.6.7",
     "body-parser": "^1.20.2",
     "bson": "^6.3.0",
     "cookie-parser": "^1.4.6",
@@ -8,7 +9,7 @@
     "ws": "^8.15.0"
   },
   "name": "localhostjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A js library to build and deploy websites to localhost in a working manner",
   "main": "localhost.js",
   "repository": {

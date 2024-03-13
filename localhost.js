@@ -4,6 +4,7 @@ const express = require("express");
 const eapp = express()
 const bodyparser = require("body-parser")
 const cookieparser = require("cookie-parser")
+const axios = require("axios").default
 
 eapp.use(express.json())
 eapp.use(bodyparser())
@@ -31,7 +32,6 @@ let soc = {
 	send:() => {}
 }
 
-const {BSON} = require("bson")
 
 const rest = eapp 
 
@@ -123,25 +123,30 @@ function listen(auth, url, dev){
 				switch(method){
 					
 					case "GET": 
-
-						response = await fetch("http://localhost:3999" + route, {
-
-							headers: request.headers
-
-						})
+						try{
+							response = await axios.get("https://localhost:3999" + route, {
+							headers:request.headers,
+							responseType:"arraybuffer"
+						})	
+						}catch{
+							throw new Error(`the route ${route} points to nothing, check that you implemented it property!`)
+						}
 				
 						break;
 
 
 					case "POST":
-
-						response = await fetch("http://localhost:3999" + route, {
-							method:"POST",
+						try{
+							response = await axios.post("http://localhost:3999" + route, JSON.stringify(request.body), {
 							headers:{
+								...request.headers,
 								"Content-Type":"application/json"
 							},
-							body:JSON.stringify(request.body)
+							responseType:"arraybuffer"
 						})
+						}catch{
+							throw new Error(`the route ${route} points to nothing, check that you implemented it property!`)
+						}
 
 						break;
 				}
@@ -150,9 +155,8 @@ function listen(auth, url, dev){
 
 										
 
-				let {headers, redirected, status, ok, statusText, url, type} = response
+				let {headers, status, ok, statusText, url, type} = response
 
-				headers = Object.fromEntries(headers.entries());
 					
 
 				const meta = {headers, redirected, status, ok, statusText, url, type}		
