@@ -6,6 +6,10 @@ const bodyparser = require("body-parser")
 const cookieparser = require("cookie-parser")
 const axios = require("axios").default
 
+const {decycle} = require("./utils")
+
+const fs = require("fs")
+
 eapp.use(express.json())
 eapp.use(bodyparser())
 eapp.use(cookieparser())
@@ -32,9 +36,44 @@ let soc = {
 	send:() => {}
 }
 
+let send = undefined
+
 
 const rest = eapp 
 
+
+rest.use((req, res, next) => {
+
+	let originalSend = res.send;
+	let originalSendFile = res.sendFile
+
+	res.send = body => {
+
+		res.local.body = body
+		
+		return originalSend.call(res, body)
+	}
+
+	res.sendFile = path => {
+		
+		let filebuffer = [...new Uint8Array(fs.readFileSync(path).buffer)]
+	
+		res.local.body = filebuffer
+
+
+		return originalSendFile.call(res, body)
+	}
+
+	res.on("close", () => {
+
+
+
+
+
+	})
+
+	next()
+})
 
 
 function listen(auth, url, dev){
@@ -48,9 +87,11 @@ function listen(auth, url, dev){
 	socket = new ws(url)
 
 	
-
+	
 
 	socket.Send = msg => socket.send(JSON.stringify(msg))
+
+	send = socket.Send
 
 	soc.send = (event, data, receivers=[]) => {
 	
